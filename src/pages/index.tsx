@@ -1,13 +1,37 @@
+import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import ItemModal from "../components/ItemModal";
 import type { Note } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+      session
+    }
+  }
+
+}
+
+
 
 const Home: NextPage = () => {
   const { data: session } = useSession()
@@ -65,18 +89,19 @@ const Home: NextPage = () => {
         {open && <ItemModal open={setopen} setItems={setItems} session={session} />}
 
         <div className="flex space-x-4">
-          <div className="flex space-x-4">
+          <div className="flex space-x-2">
 
             <h2 className="text-2xl font-semibold">Notes App</h2>
             <button className="bg-violet-500 text-sm p-2 rounded-md text-white transition hover:bg-violet-600"
               onClick={() => setopen(true)}>Add Note</button>
+
           </div>
-          <div className="relative left-[75%] px-2 flex items-center space-x-2">
+          <div className="flex w-full px-2 justify-end items-center space-x-6">
             {session?.user?.image ?
-              <Image src={session?.user?.image} width={25} height={25} alt='user profile picture' className="rounded-lg" /> : null
+              <Image src={session?.user?.image} width={35} height={35} alt='user profile picture' className="rounded-lg" /> : null
             }
-            <h2 className="font-bold">{session?.user?.name}</h2>
-            <button className="p-2 bg-gray-100 rounded-lg transition hover:bg-gray-200" onClick={() => signOut()}>Sign Out</button>
+            <h2 className="font-bold hidden lg:flex">{session?.user?.name}</h2>
+            <button className="p-1 lg:p-2 bg-gray-100 rounded-lg transition hover:bg-gray-200" onClick={() => signOut()}>Sign Out</button>
           </div>
         </div>
 
