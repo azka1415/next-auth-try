@@ -24,28 +24,25 @@ export default function Login() {
 
     return (
         <div className='flex justify-center items-center m-auto h-screen'>
-            <div className='flex flex-col p-2 w-auto'>
+            <div className='flex flex-col p-2 w-auto space-y-4'>
                 <button onClick={session ? () => handleSignOut() : () => handleSignIn()} className='p-2 bg-gray-600 rounded-lg text-white transition-all hover:bg-gray-700'>
                     {session ? loading ? 'Loading...' : 'Sign Out' : loading ? 'Loading...' : 'Sign In'}
                 </button>
-                <p>
-                    {session ? (
-                        <>
-                            <p>
-                                Welcome! ${session?.user?.name}
-                            </p>
-                            <Link href={'/'}>
-                                <button className='p-2 bg-gray-600 rounded-lg text-white transition-all hover:bg-gray-700'>
-                                    Home
-                                </button>
-                            </Link>
-                        </>
+                {session ? (
+                    <div className='flex flex-col space-y-2 justify-center items-center'>
+                        <p>
+                            Welcome! {session?.user?.name}
+                        </p>
+                        <Link href={'/'}>
+                            <button className='p-2 bg-gray-600 rounded-lg text-white transition-all hover:bg-gray-700'>
+                                Home
+                            </button>
+                        </Link>
+                    </div >
 
-                    )
-                        : null
-                    }
-                </p>
-                { }
+                )
+                    : null
+                }
 
             </div>
         </div>
