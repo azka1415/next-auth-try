@@ -1,4 +1,5 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import React, { useState } from 'react'
 
 export default function Login() {
@@ -28,10 +29,24 @@ export default function Login() {
                     {session ? loading ? 'Loading...' : 'Sign Out' : loading ? 'Loading...' : 'Sign In'}
                 </button>
                 <p>
-                    {session ?
-                        `Welcome! ${session?.user?.name}` : null
+                    {session ? (
+                        <>
+                            <p>
+                                Welcome! ${session?.user?.name}
+                            </p>
+                            <Link href={'/'}>
+                                <button className='p-2 bg-gray-600 rounded-lg text-white transition-all hover:bg-gray-700'>
+                                    Home
+                                </button>
+                            </Link>
+                        </>
+
+                    )
+                        : null
                     }
                 </p>
+                { }
+
             </div>
         </div>
     )
