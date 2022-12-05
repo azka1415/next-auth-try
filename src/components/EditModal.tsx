@@ -24,7 +24,7 @@ export default function EditModal({ open, noteId, oldBody }: EditModalProps) {
     }
 
     return (
-        <div className='flex absolute inset-0 bg-black/50 items-center justify-center'>
+        <div className='flex absolute inset-0 bg-black/50 items-center justify-center lg:items-center lg:justify-start p-2'>
             <div className="flex flex-col space-y-4 p-2 bg-gray-700 rounded-lg text-white">
                 <h3 className='text-xl font-medium'>Edit Item</h3>
                 <form className='flex flex-col items-center space-y-4 p-2 justify-center'>
