@@ -11,7 +11,7 @@ interface ItemModalProps {
     session: Session | null
 }
 
-const ItemModal: FC<ItemModalProps> = ({ open, setItems, session }) => {
+const ItemModal: FC<ItemModalProps> = ({ open, setItems }) => {
 
     const [input, setInput] = useState('')
     const item = trpc.note.addItem.useMutation()

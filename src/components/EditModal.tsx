@@ -7,12 +7,11 @@ import { useRouter } from 'next/router';
 interface EditModalProps {
     open: Dispatch<SetStateAction<boolean>>
     noteId: string
-    oldBody: string | null
 }
 
 
 
-export default function EditModal({ open, noteId, oldBody }: EditModalProps) {
+export default function EditModal({ open, noteId }: EditModalProps) {
     const router = useRouter()
     const [newName, setNewName] = useState('')
     const [newBody, setNewBody] = useState('')

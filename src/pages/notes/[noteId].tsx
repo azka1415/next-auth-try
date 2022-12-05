@@ -10,8 +10,6 @@ import Link from 'next/link';
 import EditModal from '../../components/EditModal';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
-import ItemModal from '../../components/ItemModal';
-import { router } from '../../server/trpc/trpc';
 import { useRouter } from 'next/router';
 
 
@@ -77,7 +75,7 @@ export default function Note(props: InferGetStaticPropsType<typeof getStaticProp
     }
     const handleChecked = (id: string, check: boolean) => {
         updateCheck.mutate({ text: id, check }, {
-            onSuccess(data) {
+            onSuccess() {
                 router.reload()
             },
         })
@@ -91,7 +89,7 @@ export default function Note(props: InferGetStaticPropsType<typeof getStaticProp
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <div className='flex flex-col p-1 w-screen'>
-                {open && <EditModal open={setOpen} noteId={data.id} oldBody={data.body} />}
+                {open && <EditModal open={setOpen} noteId={data.id} />}
                 <div className='p-2 text-xl flex flex-col space-y-2'>
                     <div className='flex flex-col space-y-2'>
                         <div className='flex space-x-2'>
