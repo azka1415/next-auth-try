@@ -73,6 +73,11 @@ const Home: NextPage = () => {
     })
   }
 
+  const handleSignOut = () => {
+    signOut()
+    router.push('/logging-out')
+  }
+
   if (!result.data || result.isLoading) return <p>Loading...</p>
   if (!session) {
     router.push('/login')
@@ -90,7 +95,7 @@ const Home: NextPage = () => {
 
         <nav className="flex space-x-4">
 
-          <div className="flex space-x-2 w-96 items-center justify-center">
+          <div className="flex space-x-2 w-96 items-center justify-start">
             <h2 className="text-2xl font-semibold">Notes App</h2>
             <button className="bg-violet-500 text-sm p-2 rounded-md text-white transition hover:bg-violet-600"
               onClick={() => setopen(true)}>Add Note</button>
@@ -101,7 +106,7 @@ const Home: NextPage = () => {
               <Image src={session?.user?.image} width={35} height={35} alt='user profile picture' className="rounded-lg" /> : null
             }
             <h2 className="font-bold hidden lg:flex">{session?.user?.name}</h2>
-            <button className="p-1 lg:p-2 bg-gray-100 rounded-lg transition hover:bg-gray-200" onClick={() => signOut()}>Sign Out</button>
+            <button className="p-1 lg:p-2 bg-gray-100 rounded-lg transition hover:bg-gray-200" onClick={handleSignOut}>Sign Out</button>
           </div>
 
         </nav>

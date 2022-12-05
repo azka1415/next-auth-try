@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// zod object generator 
 generator zod {
   provider = "zod-prisma"
   output   = "../src/server/zod" // (default) the directory where generated zod schemas will be saved
@@ -38,6 +39,7 @@ generator zod {
 model Note {
   id        String   @id @default(cuid())
   name      String
+  body      String?
   checked   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

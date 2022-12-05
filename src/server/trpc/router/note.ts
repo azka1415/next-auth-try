@@ -60,11 +60,26 @@ export const noteRouter = router({
       return item;
     }),
   editItem: publicProcedure
-    .input(z.object({ text: z.string(), newName: z.string() }))
+    .input(
+      z.object({ text: z.string(), newName: z.string(), newBody: z.string() })
+    )
     .mutation(async ({ ctx, input }) => {
+      if (input.newBody === "") {
+        const item = await ctx.prisma.note.update({
+          where: { id: input.text },
+          data: { name: input.newName },
+        });
+        return item;
+      } else if (input.newName === "") {
+        const item = await ctx.prisma.note.update({
+          where: { id: input.text },
+          data: { body: input.newBody },
+        });
+        return item;
+      }
       const item = await ctx.prisma.note.update({
         where: { id: input.text },
-        data: { name: input.newName },
+        data: { name: input.newName, body: input.newBody },
       });
       return item;
     }),

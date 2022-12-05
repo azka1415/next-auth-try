@@ -7,28 +7,32 @@ import { useRouter } from 'next/router';
 interface EditModalProps {
     open: Dispatch<SetStateAction<boolean>>
     noteId: string
+    oldBody: string | null
 }
 
 
 
-export default function EditModal({ open, noteId }: EditModalProps) {
+export default function EditModal({ open, noteId, oldBody }: EditModalProps) {
     const router = useRouter()
     const [newName, setNewName] = useState('')
+    const [newBody, setNewBody] = useState('')
     const item = trpc.note.editItem.useMutation()
     const handleEdit = () => {
-        item.mutate({ text: noteId, newName })
+        item.mutate({ text: noteId, newName, newBody })
         open(false)
         router.reload()
     }
 
     return (
-        <div className='absolute inset-0 flex items-center justify-center shadow-4xl'>
-            <div className="space-y-4 p-3 bg-gray-700 rounded-lg text-white">
+        <div className='flex absolute inset-0 bg-black/50 items-center justify-center'>
+            <div className="flex flex-col space-y-4 p-2 bg-gray-700 rounded-lg text-white">
                 <h3 className='text-xl font-medium'>Edit Item</h3>
-                <form className='flex items-center space-x-4'>
+                <form className='flex flex-col items-center space-y-4 p-2 justify-center'>
                     <label htmlFor="item_name">Note Name</label>
                     <input type="text" className='rounded-lg p-2 text-black' name='item_name' id='item_name'
                         onChange={(e) => setNewName(e.target.value)} />
+                    <label htmlFor="body">Body</label>
+                    <textarea name="" id="body" className='rounded-lg p-2 text-black' onChange={(e) => setNewBody(e.target.value)} />
                     <button className='bg-violet-500 text-sm p-2 rounded-md text-white transition hover:bg-violet-600'
                         onClick={handleEdit}>Change</button>
                 </form>
