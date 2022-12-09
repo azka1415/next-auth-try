@@ -16,22 +16,3 @@ export default function Home() {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getServerAuthSession(context)
-
-    if (!session) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
-
-    return {
-        props: {
-            session
-        }
-    }
-
-}

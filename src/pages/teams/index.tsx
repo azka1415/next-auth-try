@@ -6,24 +6,7 @@ import React from 'react'
 import { getServerAuthSession } from '../../server/common/get-server-auth-session'
 import { trpc } from '../../utils/trpc'
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getServerAuthSession(context)
-    if (!session) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
-            }
-        }
-    }
 
-    return {
-        props: {
-            session
-        }
-    }
-
-}
 
 
 export default function TeamPage() {
