@@ -1,6 +1,28 @@
+import type { GetServerSideProps } from 'next'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import { getServerAuthSession } from '../server/common/get-server-auth-session'
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await getServerAuthSession(context)
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        redirect: {
+            destination: '/',
+            permanent: false
+        }
+    }
+
+}
 
 export default function Login() {
 

@@ -6,6 +6,8 @@ export const noteRouter = router({
     .input(
       z.object({
         text: z.string(),
+        body: z.string(),
+        shared: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -19,7 +21,8 @@ export const noteRouter = router({
       const item = await ctx.prisma.note.create({
         data: {
           name: input.text,
-          creator: {
+          body: input.body,
+          User: {
             connect: {
               id: ctx.session?.user?.id,
             },

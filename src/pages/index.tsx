@@ -1,15 +1,16 @@
 import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
-import ItemModal from "../components/ItemModal";
-import type { Note } from "@prisma/client";
-import { useEffect, useState } from "react";
+import CreateNote from "../components/CreateNoteModal";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
+import { Button } from "@material-tailwind/react";
+import Note from '../components/NoteComponent'
+import Navbar from "../components/NavbarComponent";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context)
@@ -35,50 +36,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Home: NextPage = () => {
   const { data: session } = useSession()
-  const [items, setItems] = useState<Note[]>([])
-  const [open, setopen] = useState(false)
-  const [checkItems, setCheckItems] = useState<Note[]>([])
-  const itemDelete = trpc.note.deleteItem.useMutation()
-  const updateCheck = trpc.note.checkItem.useMutation()
-  const result = trpc.note.getItems.useQuery()
+  const [open, setOpen] = useState(false)
+
+  const notes = trpc.note.getItems.useQuery()
   const router = useRouter()
 
-  useEffect(() => {
-    if (result.data) {
-      setItems(result.data)
-      result.refetch()
-      return () => setItems([])
-    }
-    return () => setItems([])
-  }, [result.data, result])
 
-  const handleDelete = (id: string) => {
-    itemDelete.mutate({ text: id }, {
-      onSuccess(data) {
-        setItems((prev) => prev.filter((item) => item.id !== data.id))
-      },
-    })
-  }
 
-  const handleChecked = (id: string, check: boolean) => {
-    updateCheck.mutate({ text: id, check }, {
-      onSuccess(data) {
-        if (checkItems.some((item) => item.id === data.id)) {
-          setCheckItems((prev) => prev.filter((item) => item.id !== data.id))
-        }
-        else {
-          setCheckItems((prev) => [...prev, data])
-        }
-      },
-    })
-  }
-
-  const handleSignOut = () => {
-    signOut()
-    router.push('/logging-out')
-  }
-
-  if (!result.data || result.isLoading) return <p>Loading...</p>
+  if (!notes.data || notes.isLoading) return <p>Loading...</p>
   if (!session) {
     router.push('/login')
   }
@@ -91,58 +56,21 @@ const Home: NextPage = () => {
       </Head>
       <div className="flex flex-col w-screen p-1">
 
-        {open && <ItemModal open={setopen} setItems={setItems} session={session} />}
+        <Navbar>
+          <Button size="sm" color="purple" className={`p-2`} onClick={() => setOpen(true)}>Add Note</Button>
+          {open && <CreateNote open={open} setOpen={setOpen} notes={notes} />}
+          <Button>Teams</Button>
+        </Navbar>
 
-        <nav className="flex space-x-4">
 
-          <div className="flex space-x-2 w-96 items-center justify-start">
-            <h2 className="text-2xl font-semibold">Notes App</h2>
-            <button className="bg-violet-500 text-sm p-2 rounded-md text-white transition hover:bg-violet-600"
-              onClick={() => setopen(true)}>Add Note</button>
-          </div>
-
-          <div className="flex w-full px-2 justify-end items-center space-x-6">
-            {session?.user?.image ?
-              <Image src={session?.user?.image} width={35} height={35} alt='user profile picture' className="rounded-lg" /> : null
-            }
-            <h2 className="font-bold hidden lg:flex">{session?.user?.name}</h2>
-            <button className="p-1 lg:p-2 bg-gray-100 rounded-lg transition hover:bg-gray-200" onClick={handleSignOut}>Sign Out</button>
-          </div>
-
-        </nav>
 
         <div className="space-y-6 my-2 w-full lg:grid lg:grid-cols-4 lg:space-y-0 lg:gap-4 p-1">
-          {items.sort((a, b) => {
+          {notes.data.sort((a, b) => {
             const one = new Date(b.updatedAt).getTime()
             const two = new Date(a.updatedAt).getTime()
             return one - two
           }).map(item => (
-            <div key={item.id} className='flex lg:flex lg:flex-col space-x-4 justify-between items-center text-center border p-1 border-black rounded-lg'>
-              <div className="flex flex-row lg:flex lg:flex-col space-x-2 justify-start items-center lg:space-x-0 lg:space-y-1">
-
-                <Link href={`/notes/${item.id}`}>
-                  <p className="cursor-pointer text-xl transition hover:underline">{item.name}</p>
-                </Link>
-                {item.checked === true ? (
-                  <input type="checkbox" checked={true} className='p-1 rounded-lg bg-green-600' />
-                ) : null}
-              </div>
-              <p className="hidden tansition-all md:flex">Created: {new Date(item.createdAt).toLocaleString()}</p>
-              {new Date(item.updatedAt).toLocaleString() === new Date(item.createdAt).toLocaleString() ? null :
-                (<p className="hidden tansition-all md:flex">Updated: {new Date(item.updatedAt).toLocaleString()}</p>)
-              }
-              <div className="flex space-x-2 justify-end items-center">
-
-                {item.checked === false ?
-                  (<button onClick={() => handleChecked(item.id, true)} className='bg-green-600 text-white rounded-lg p-2 transition-all hover:bg-green-700'>Check</button>) :
-                  (<button onClick={() => handleChecked(item.id, false)} className='bg-green-600 text-white rounded-lg p-2 transition-all hover:bg-green-700'>Uncheck</button>)}
-
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className='bg-red-600 p-2 rounded-lg text-white transition-all hover:bg-red-700'>Delete</button>
-              </div>
-            </div>
-
+            <Note key={item.id} item={item} notes={notes} />
           ))}
         </div>
 

@@ -36,15 +36,46 @@ generator zod {
   // prismaJsonNullability = false // allows null assignment to optional JSON fields
 }
 
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  members     Member[]
+  creator     Member?  @relation("team creator", fields: [creatorId], references: [memberId])
+  creatorId   String
+  Note        Note[]
+  inviteLink  String?  @unique
+
+  @@unique([id])
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model Member {
+  memberId     String @id @default(cuid())
+  createdTeams Team[] @relation("team creator")
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String
+  teams        Team[] //teams joined
+  role         Role   @default(MEMBER)
+}
+
 model Note {
-  id        String   @id @default(cuid())
-  name      String
-  body      String?
-  checked   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  creator   User     @relation(fields: [userId], references: [id])
-  userId    String
+  id            String   @id @default(cuid())
+  name          String
+  body          String?
+  checked       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  User          User     @relation(fields: [userId], references: [id])
+  userId        String
+  shareWithTeam Boolean  @default(false)
+  Team          Team?    @relation(fields: [teamId], references: [id])
+  teamId        String?
 }
 
 // Necessary for Next auth
@@ -77,12 +108,13 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Note          Note[]
+  notes         Note[]
+  Member        Member[]
 }
 
 model VerificationToken {

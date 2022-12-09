@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CompleteUser, RelatedUserModel } from "./index"
+import { CompleteUser, RelatedUserModel, CompleteTeam, RelatedTeamModel } from "./index"
 
 export const NoteModel = z.object({
   id: z.string(),
@@ -9,10 +9,13 @@ export const NoteModel = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   userId: z.string(),
+  shareWithTeam: z.boolean(),
+  teamId: z.string().nullish(),
 })
 
 export interface CompleteNote extends z.infer<typeof NoteModel> {
-  creator: CompleteUser
+  User: CompleteUser
+  Team?: CompleteTeam | null
 }
 
 /**
@@ -21,5 +24,6 @@ export interface CompleteNote extends z.infer<typeof NoteModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedNoteModel: z.ZodSchema<CompleteNote> = z.lazy(() => NoteModel.extend({
-  creator: RelatedUserModel,
+  User: RelatedUserModel,
+  Team: RelatedTeamModel.nullish(),
 }))

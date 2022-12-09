@@ -11,7 +11,7 @@ interface EditModalProps {
 
 
 
-export default function EditModal({ open, noteId }: EditModalProps) {
+export default function EditNote({ open, noteId }: EditModalProps) {
     const router = useRouter()
     const [newName, setNewName] = useState('')
     const [newBody, setNewBody] = useState('')
